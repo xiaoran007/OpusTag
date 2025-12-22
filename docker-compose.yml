@@ -9,7 +9,7 @@ services:
       - ./backend:/app/backend
       # Map your local music library here. 
       # Format: /path/to/local/music:/music
-      # - /Volumes/Data/Music:/music
+      - /Volumes/Data/temp:/music
     environment:
       - PYTHONUNBUFFERED=1
 
@@ -23,6 +23,7 @@ services:
       - ./frontend:/app
       # Prevent host node_modules from overwriting container node_modules
       - /app/node_modules
+    command: sh -c "npm install && npm run dev -- --host"
     environment:
       - VITE_API_TARGET=http://backend:8000
     depends_on:
