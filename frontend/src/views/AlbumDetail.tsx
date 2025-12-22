@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { X, Disc, Calendar, Mic2, Layers, Wand2, Music } from 'lucide-react';
+import { X, Disc, Calendar, Layers, Wand2, Edit2 } from 'lucide-react';
 import { CoverPicker } from '@/components/CoverPicker';
-import { clsx } from 'clsx';
+import { MetadataEditor } from '@/components/MetadataEditor';
 
-// Interface matching backend
 interface Track {
   path: string;
   title: string;
@@ -21,16 +20,20 @@ interface LocalAlbum {
   sample_file: string;
   has_cover: boolean;
   tracks: Track[];
+  // Assuming backend returns these now or we default safely
+  genre?: string;
+  composer?: string;
 }
 
 interface AlbumDetailProps {
   album: LocalAlbum;
   onClose: () => void;
-  onRefresh: () => void; // Callback to refresh library after changes
+  onRefresh: () => void;
 }
 
 export function AlbumDetail({ album, onClose, onRefresh }: AlbumDetailProps) {
   const [showPicker, setShowPicker] = useState(false);
+  const [showEditor, setShowEditor] = useState(false);
 
   const getCoverUrl = (path: string, bustCache = false) => {
     const base = `/api/library/cover?path=${encodeURIComponent(path)}`;
@@ -39,20 +42,35 @@ export function AlbumDetail({ album, onClose, onRefresh }: AlbumDetailProps) {
 
   const handleEmbedCover = async (imageUrl: string) => {
     try {
-      // Collect all file paths in this album
       const filePaths = album.tracks.map(t => t.path);
-      
       await axios.post('/api/library/embed', {
         file_paths: filePaths,
         image_url: imageUrl
       });
-
-      // Success! Close picker and refresh
       setShowPicker(false);
-      onRefresh(); // This will trigger parent to reload scanning, which might take a sec
+      onRefresh(); 
     } catch (err) {
       console.error(err);
-      throw err; // Propagate to picker for handling
+      throw err;
+    }
+  };
+
+  const handleSaveMetadata = async (data: any) => {
+    try {
+      const filePaths = album.tracks.map(t => t.path);
+      await axios.post('/api/library/update_meta', {
+        file_paths: filePaths,
+        artist: data.artist,
+        album: data.title,
+        year: data.year,
+        genre: data.genre,
+        composer: data.composer
+      });
+      setShowEditor(false);
+      onRefresh();
+    } catch (err) {
+      console.error(err);
+      throw err;
     }
   };
 
@@ -64,7 +82,7 @@ export function AlbumDetail({ album, onClose, onRefresh }: AlbumDetailProps) {
       {/* Modal Content */}
       <div className="relative w-full max-w-5xl h-full sm:h-[90vh] bg-[#1c1c1e] sm:rounded-2xl shadow-2xl flex flex-col sm:flex-row overflow-hidden ring-1 ring-white/10">
         
-        {/* Close Button (Mobile/Desktop) */}
+        {/* Close Button */}
         <button 
           onClick={onClose}
           className="absolute top-4 right-4 z-20 p-2 bg-black/20 hover:bg-white/10 rounded-full text-white/70 hover:text-white transition-colors backdrop-blur-md"
@@ -76,7 +94,7 @@ export function AlbumDetail({ album, onClose, onRefresh }: AlbumDetailProps) {
         <div className="w-full sm:w-[400px] bg-[#252527] border-b sm:border-b-0 sm:border-r border-white/5 flex flex-col">
           {/* Cover Image Area */}
           <div className="p-8 pb-4 flex flex-col items-center">
-             <div className="relative aspect-square w-full max-w-[300px] shadow-2xl rounded-xl overflow-hidden bg-[#1c1c1e] ring-1 ring-black/20 group">
+             <div className="relative aspect-square w-full max-w-[300px] shadow-2xl rounded-xl overflow-hidden bg-[#1c1c1e] ring-1 ring-black/20">
                 {album.has_cover ? (
                   <img 
                     src={getCoverUrl(album.sample_file, true)} 
@@ -91,35 +109,44 @@ export function AlbumDetail({ album, onClose, onRefresh }: AlbumDetailProps) {
              </div>
           </div>
 
-          {/* Metadata Fields (Read Only for now) */}
-          <div className="px-8 py-4 space-y-6 flex-1 overflow-y-auto">
-             <div className="space-y-1 text-center sm:text-left">
+          {/* Metadata Display (Read Only) */}
+          <div className="px-8 py-4 space-y-6 flex-1 overflow-y-auto text-center sm:text-left">
+             <div className="space-y-1">
                 <h2 className="text-2xl font-bold text-white leading-tight">{album.title}</h2>
                 <p className="text-lg text-apple-red font-medium">{album.artist}</p>
              </div>
 
              <div className="space-y-3">
-                <div className="flex items-center gap-3 text-sm text-white/60">
+                <div className="flex items-center justify-center sm:justify-start gap-3 text-sm text-white/60">
                     <Calendar className="w-4 h-4 text-white/30" />
                     <span>{album.year || "Unknown Year"}</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-white/60">
+                <div className="flex items-center justify-center sm:justify-start gap-3 text-sm text-white/60">
                     <Layers className="w-4 h-4 text-white/30" />
                     <span>{album.track_count} Tracks</span>
                 </div>
-                {/* Future: Genre, etc. */}
              </div>
           </div>
 
-          {/* Footer Action */}
-          <div className="p-6 pt-0 mt-auto">
-             <button 
-                onClick={() => setShowPicker(true)}
-                className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-sm font-medium text-white/90 transition-colors flex items-center justify-center gap-2"
-             >
-                <Wand2 className="w-4 h-4 text-apple-red" />
-                Auto-Match-Replace Cover
-             </button>
+          {/* Footer Actions */}
+          <div className="p-6 pt-0 mt-auto space-y-3">
+              {/* Edit Metadata Button */}
+              <button 
+                  onClick={() => setShowEditor(true)}
+                  className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-sm font-medium text-white/90 transition-colors flex items-center justify-center gap-2"
+              >
+                  <Edit2 className="w-4 h-4" />
+                  Edit Metadata
+              </button>
+
+              {/* Auto Match Button */}
+              <button 
+                  onClick={() => setShowPicker(true)}
+                  className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/5 rounded-xl text-sm font-medium text-white/90 transition-colors flex items-center justify-center gap-2 group"
+              >
+                  <Wand2 className="w-4 h-4 text-apple-red group-hover:animate-pulse" />
+                  {album.has_cover ? "Replace Cover" : "Auto-Match Cover"}
+              </button>
           </div>
         </div>
 
@@ -136,7 +163,6 @@ export function AlbumDetail({ album, onClose, onRefresh }: AlbumDetailProps) {
                             <th className="px-4 py-2 w-12 text-center">#</th>
                             <th className="px-4 py-2">Title</th>
                             <th className="px-4 py-2">Artist</th>
-                            {/* <th className="px-4 py-2 w-16 text-right">Time</th> */}
                         </tr>
                     </thead>
                     <tbody>
@@ -160,12 +186,26 @@ export function AlbumDetail({ album, onClose, onRefresh }: AlbumDetailProps) {
 
       </div>
 
-      {/* Cover Picker Modal (Nested) */}
+      {/* Modals */}
       {showPicker && (
         <CoverPicker 
             initialQuery={`${album.artist} ${album.title}`}
             onClose={() => setShowPicker(false)}
             onSelect={handleEmbedCover}
+        />
+      )}
+
+      {showEditor && (
+        <MetadataEditor 
+            initialData={{
+                title: album.title,
+                artist: album.artist,
+                year: album.year,
+                genre: album.genre,
+                composer: album.composer
+            }}
+            onClose={() => setShowEditor(false)}
+            onSave={handleSaveMetadata}
         />
       )}
     </div>

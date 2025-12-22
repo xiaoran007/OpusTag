@@ -43,6 +43,8 @@ class TaggerService:
                                 "title": meta['album'] or "Unknown Album",
                                 "artist": meta['artist'] or "Unknown Artist",
                                 "year": meta['year'],
+                                "genre": meta.get('genre'),
+                                "composer": meta.get('composer'),
                                 "tracks": [],
                                 "sample_file": full_path, # Keep one file path to extract cover later
                                 "has_cover": False
@@ -89,6 +91,7 @@ class TaggerService:
                 "album": get("album"),
                 "year": get("date"),
                 "genre": get("genre"),
+                "composer": get("composer"),
                 "track_number": get("tracknumber", "0"),
                 "has_cover": len(audio.pictures) > 0
             }
@@ -132,6 +135,24 @@ class TaggerService:
                 audio.save()
             except Exception as e:
                 print(f"Failed to embed cover for {path}: {e}")
+
+    def update_album_metadata(self, file_paths: List[str], tags: Dict[str, str]):
+        """
+        Updates tags for multiple files.
+        """
+        for path in file_paths:
+            try:
+                audio = FLAC(path)
+                
+                if 'artist' in tags: audio['artist'] = tags['artist']
+                if 'album' in tags: audio['album'] = tags['album']
+                if 'year' in tags: audio['date'] = tags['year']
+                if 'genre' in tags: audio['genre'] = tags['genre']
+                if 'composer' in tags: audio['composer'] = tags['composer']
+                
+                audio.save()
+            except Exception as e:
+                print(f"Failed to update tags for {path}: {e}")
 
 # Singleton
 tagger_service = TaggerService()

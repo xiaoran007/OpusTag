@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Response
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 from backend.services.tagger import tagger_service
 import os
 
@@ -9,6 +9,14 @@ router = APIRouter(prefix="/api/library", tags=["library"])
 class EmbedRequest(BaseModel):
     file_paths: List[str]
     image_url: str
+
+class UpdateMetaRequest(BaseModel):
+    file_paths: List[str]
+    artist: str
+    album: str
+    year: str
+    genre: Optional[str] = None
+    composer: Optional[str] = None
 
 class ScanRequest(BaseModel):
     path: str = "/music"
@@ -43,6 +51,27 @@ def embed_cover(req: EmbedRequest):
     """
     try:
         tagger_service.embed_cover_from_url(req.file_paths, req.image_url)
+        return {"status": "success", "processed": len(req.file_paths)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/update_meta")
+def update_metadata(req: UpdateMetaRequest):
+    """
+    Updates metadata (Artist, Album, Year, Genre, Composer) for a list of files.
+    """
+    tags = {
+        "artist": req.artist,
+        "album": req.album,
+        "year": req.year
+    }
+    if req.genre is not None:
+        tags["genre"] = req.genre
+    if req.composer is not None:
+        tags["composer"] = req.composer
+        
+    try:
+        tagger_service.update_album_metadata(req.file_paths, tags)
         return {"status": "success", "processed": len(req.file_paths)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
