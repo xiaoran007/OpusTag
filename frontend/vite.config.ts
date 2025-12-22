@@ -13,7 +13,9 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        // Use environment variable for backend URL if provided, otherwise default to localhost
+        // In Docker, this should be set to 'http://backend:8000'
+        target: process.env.VITE_API_TARGET || 'http://localhost:8000',
         changeOrigin: true,
       }
     }
