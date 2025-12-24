@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Background: Apple Red with Rounded Corners -->
+  <rect width="128" height="128" rx="28" fill="#fa233b"/>
+  
+  <!-- Icon: Disc (Mimicking Lucide Disc) -->
+  <!-- Outer Ring -->
+  <circle cx="64" cy="64" r="40" stroke="white" stroke-width="8" fill="none" opacity="0.9"/>
+  <!-- Center Dot -->
+  <circle cx="64" cy="64" r="10" fill="white" opacity="0.9"/>
+</svg>

@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "opustag"
+version = "0.1.0"
+description = "A classical music metadata tagger and manager"
+readme = "README.md"
+authors = [
+    {name = "Xiao Ran"}
+]
+maintainers = [
+    {name = "Xiao Ran", email="xiaoran.007@icloud.com"},
+]
+license = {text = "GPL v3"}
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent"
+]
+urls = {homepage = "https://github.com/xiaoran007/OpusTag"}
+requires-python = ">=3.9"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "python-multipart",
+    "requests",
+    "mutagen",
+    "pydantic"
+]
+
+[project.scripts]
+opustag = "opustag.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["opustag*"]
+
+[tool.setuptools.package-data]
+opustag = ["static/**/*", "static/*"]
