@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Response
 from pydantic import BaseModel
 from typing import List, Optional
-from backend.services.tagger import tagger_service
+from opustag.services.tagger import tagger_service
 import os
 
 router = APIRouter(prefix="/api/library", tags=["library"])

@@ -20,4 +20,4 @@ EXPOSE 8000
 
 # Run uvicorn with reload enabled for development
 # host 0.0.0.0 is crucial for Docker networking
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "opustag.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

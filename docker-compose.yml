@@ -2,11 +2,11 @@ services:
   backend:
     build:
       context: .
-      dockerfile: backend/Dockerfile
+      dockerfile: opustag/Dockerfile
     ports:
       - "8000:8000"
     volumes:
-      - ./backend:/app/backend
+      - ./opustag:/app/opustag
       # Map your local music library here. 
       # Format: /path/to/local/music:/music
       - /Volumes/Data/temp:/music

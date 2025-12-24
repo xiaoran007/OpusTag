@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query
 from typing import List, Optional
-from backend.services import itunes
+from opustag.services import itunes
 
 router = APIRouter(prefix="/api/search", tags=["search"])
 
