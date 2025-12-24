@@ -2,7 +2,7 @@
 
 **OpusTag** is a modern, elegant audio metadata manager designed specifically for classical music collectors. It combines a powerful local library organizer with an integrated high-resolution cover art fetcher powered by the iTunes API.
 
-![Library View Placeholder](https://placehold.co/1200x800/1c1c1e/ffffff?text=Library+View+Screenshot)
+<!-- ![Library View Placeholder](https://placehold.co/1200x800/1c1c1e/ffffff?text=Library+View+Screenshot) -->
 
 ## ✨ Features
 
@@ -17,10 +17,28 @@
 
 ### Prerequisites
 
-- **Docker** and **Docker Compose** installed on your system.
+- **Python 3.9+** (for pip installation)
+- **Node.js 18+** (for building from source)
+- **Docker** and **Docker Compose** (for containerized usage)
 - A folder containing your music collection (FLAC format recommended).
 
-### Installation
+### Installation (Pip)
+
+You can install OpusTag directly via pip:
+
+```bash
+pip install opustag
+```
+
+Start the application with:
+
+```bash
+opustag --music-dir /path/to/your/music
+```
+
+This will automatically open your web browser to the application interface.
+
+### Installation (Docker)
 
 1.  **Clone the repository:**
     ```bash
@@ -36,7 +54,7 @@
       backend:
         # ...
         volumes:
-          - ./backend:/app/backend
+          - ./opustag:/app/opustag
           - /path/to/your/local/music:/music  <-- CHANGE THIS
     ```
 
@@ -47,6 +65,27 @@
 
 4.  **Access OpusTag:**
     Open your browser and navigate to **[http://localhost:5173](http://localhost:5173)**.
+
+### Build from Source
+
+To build and install the package locally from source:
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/yourusername/OpusTag.git
+    cd OpusTag
+    ```
+
+2.  **Build and Install:**
+    Use the provided Makefile to build the frontend and backend, then install.
+    ```bash
+    make install
+    ```
+
+3.  **Run:**
+    ```bash
+    opustag
+    ```
 
 ## 📖 Usage Guide
 
