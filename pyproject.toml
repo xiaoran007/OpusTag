@@ -5,21 +5,15 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "opustag"
 version = "0.1.0"
-description = "A classical music metadata tagger and manager"
-readme = "README.md"
+description = "A modern, elegant audio metadata manager designed specifically for classical music collectors."
 authors = [
     {name = "Xiao Ran"}
 ]
 maintainers = [
     {name = "Xiao Ran", email="xiaoran.007@icloud.com"},
 ]
-license = {text = "GPL v3"}
-classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent"
-]
-urls = {homepage = "https://github.com/xiaoran007/OpusTag"}
+readme = "README.md"
+license = "GPL v3"
 requires-python = ">=3.9"
 dependencies = [
     "fastapi",
@@ -29,6 +23,12 @@ dependencies = [
     "mutagen",
     "pydantic"
 ]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent"
+]
+urls = {homepage = "https://github.com/xiaoran007/OpusTag"}
 
 [project.scripts]
 opustag = "opustag.cli:main"
