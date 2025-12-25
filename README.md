@@ -1,5 +1,11 @@
 # OpusTag
 
+[![Downloads](https://static.pepy.tech/badge/opustag)](https://pepy.tech/project/opustag)
+![PyPI - Version](https://img.shields.io/pypi/v/opustag?label=version)
+
+![Static Badge](https://img.shields.io/badge/amd64-green)
+![Static Badge](https://img.shields.io/badge/aarch64-blue)
+
 **OpusTag** is a modern, elegant audio metadata manager designed specifically for classical music collectors. It combines a powerful local library organizer with an integrated high-resolution cover art fetcher powered by the iTunes API.
 
 <!-- ![Library View Placeholder](https://placehold.co/1200x800/1c1c1e/ffffff?text=Library+View+Screenshot) -->
