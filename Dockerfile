@@ -1,5 +1,5 @@
 # Stage 1: Build Frontend
-FROM node:20-alpine AS frontend-builder
+FROM --platform=$BUILDPLATFORM node:20-alpine AS frontend-builder
 WORKDIR /frontend
 COPY frontend/package*.json ./
 RUN npm install
@@ -22,6 +22,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy project definition files
 COPY pyproject.toml requirements.txt README.md MANIFEST.in ./
 
+# Install dependencies first to leverage Docker cache
+RUN pip install --no-cache-dir -r requirements.txt
+
 # Copy backend code
 COPY opustag/ opustag/
 
@@ -29,9 +32,8 @@ COPY opustag/ opustag/
 # ensuring the static directory exists first (though COPY creates it)
 COPY --from=frontend-builder /frontend/dist opustag/static/
 
-# Install the package itself (and dependencies)
-# This handles requirements.txt via pyproject.toml or direct install
-RUN pip install .
+# Install the package itself (without re-installing dependencies)
+RUN pip install --no-deps .
 
 # Create a volume for music
 VOLUME /music
