@@ -15,77 +15,61 @@
 
 ## 🚀 Getting Started
 
+OpusTag can be installed as a Python package or run via Docker.
+
 ### Prerequisites
 
-- **Python 3.9+** (for pip installation)
-- **Node.js 18+** (for building from source)
-- **Docker** and **Docker Compose** (for containerized usage)
 - A folder containing your music collection (FLAC format recommended).
 
 ### Installation (Pip)
 
-You can install OpusTag directly via pip:
+Install the latest version from PyPI:
 
 ```bash
 pip install opustag
 ```
 
-Start the application with:
+Start the application pointing to your music directory:
 
 ```bash
 opustag --music-dir /path/to/your/music
 ```
 
-This will automatically open your web browser to the application interface.
+This will launch the server and open your default web browser to the OpusTag interface.
 
 ### Installation (Docker)
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/yourusername/OpusTag.git
-    cd OpusTag
-    ```
+Pull and run the pre-built image from Docker Hub:
 
-2.  **Configure Music Directory:**
-    Open `docker-compose.yml` and locate the volume mapping for the `backend` service. Update the left side of the mapping to point to your local music folder.
+```bash
+docker run -d \
+  -p 8000:8000 \
+  -v /path/to/your/music:/music \
+  xiaoran007/opustag:latest
+```
 
-    ```yaml
-    services:
-      backend:
-        # ...
-        volumes:
-          - ./opustag:/app/opustag
-          - /path/to/your/local/music:/music  <-- CHANGE THIS
-    ```
+The application will be available at **[http://localhost:8000](http://localhost:8000)**.
 
-3.  **Start the Application:**
-    ```bash
-    docker-compose up -d --build
-    ```
+### Development (Build from Source)
 
-4.  **Access OpusTag:**
-    Open your browser and navigate to **[http://localhost:5173](http://localhost:5173)**.
-
-### Build from Source
-
-To build and install the package locally from source:
+If you want to contribute or build from source:
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/yourusername/OpusTag.git
+    git clone https://github.com/xiaoran007/OpusTag.git
     cd OpusTag
     ```
 
-2.  **Build and Install:**
-    Use the provided Makefile to build the frontend and backend, then install.
+2.  **Install dependencies:**
     ```bash
-    make install
+    pip install -e .
     ```
 
-3.  **Run:**
+3.  **Run Development Server:**
     ```bash
-    opustag
+    uvicorn opustag.main:app --reload
     ```
+    *Note: For frontend development, you will also need to run the Vite dev server inside the `frontend/` directory.*
 
 ## 📖 Usage Guide
 
