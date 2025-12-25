@@ -1,6 +1,7 @@
 # OpusTag
 
-[![Downloads](https://static.pepy.tech/badge/opustag)](https://pepy.tech/project/opustag)
+<!-- [![Downloads](https://static.pepy.tech/badge/opustag)](https://pepy.tech/project/opustag) -->
+![Docker Pulls](https://img.shields.io/docker/pulls/xiaoran007/opustag)
 ![PyPI - Version](https://img.shields.io/pypi/v/opustag?label=version)
 
 ![Static Badge](https://img.shields.io/badge/amd64-green)
