@@ -13,6 +13,6 @@ This file contains specific instructions for the Gemini CLI agent when working o
     - Frontend code (if any) should generally follow the project's existing style.
 
 3.  **Project Structure**:
-    - Backend logic resides in `backend/`.
+    - Backend logic resides in `opustag/`.
     - Frontend logic resides in `frontend/`.
     - Keep logic modular (Service layer vs Router layer).

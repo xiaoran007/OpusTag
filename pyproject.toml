@@ -13,7 +13,8 @@ maintainers = [
     {name = "Xiao Ran", email="xiaoran.007@icloud.com"},
 ]
 readme = "README.md"
-license = "GPL v3"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
 requires-python = ">=3.9"
 dependencies = [
     "fastapi",
