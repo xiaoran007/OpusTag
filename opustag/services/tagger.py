@@ -33,15 +33,18 @@ class TaggerService:
                         if not meta:
                             continue
                         
+                        # Determine effective artist for grouping (prefer Album Artist)
+                        effective_artist = meta['album_artist'] if meta.get('album_artist') else meta['artist']
+                        
                         # Generate Album ID
-                        album_id = self._generate_album_id(meta['artist'], meta['album'])
+                        album_id = self._generate_album_id(effective_artist, meta['album'])
                         
                         # Initialize Album entry if new
                         if album_id not in albums_map:
                             albums_map[album_id] = {
                                 "id": album_id,
                                 "title": meta['album'] or "Unknown Album",
-                                "artist": meta['artist'] or "Unknown Artist",
+                                "artist": effective_artist or "Unknown Artist",
                                 "year": meta['year'],
                                 "genre": meta.get('genre'),
                                 "composer": meta.get('composer'),
@@ -88,6 +91,7 @@ class TaggerService:
                 "path": file_path,
                 "title": get("title", os.path.basename(file_path)),
                 "artist": get("artist"),
+                "album_artist": get("albumartist"),
                 "album": get("album"),
                 "year": get("date"),
                 "genre": get("genre"),
