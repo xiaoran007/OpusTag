@@ -32,20 +32,17 @@ export function LibraryView() {
   // Selection State
   const [selectedAlbum, setSelectedAlbum] = useState<LocalAlbum | null>(null);
 
-  // Default scan path
-  const SCAN_PATH = "/music";
-
   const fetchLibrary = async () => {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.post<LocalAlbum[]>('/api/library/scan', { path: SCAN_PATH });
+      const response = await axios.post<LocalAlbum[]>('/api/library/scan', {});
       setAlbums(response.data);
       // Update version to force image reload
       setCoverVersion(Date.now());
     } catch (err) {
       console.error(err);
-      setError('Failed to scan library. Ensure "/music" is mounted.');
+      setError('Failed to scan library.');
     } finally {
       setLoading(false);
     }
@@ -105,7 +102,7 @@ export function LibraryView() {
             {!loading && albums.length === 0 && !error && (
                 <div className="h-full flex flex-col items-center justify-center text-center opacity-20 pb-20">
                     <Music className="w-16 h-16 mb-6" />
-                    <p className="text-base font-medium">No albums found in /music.</p>
+                    <p className="text-base font-medium">No albums found.</p>
                 </div>
             )}
 
