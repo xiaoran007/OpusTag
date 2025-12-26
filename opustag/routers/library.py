@@ -19,14 +19,16 @@ class UpdateMetaRequest(BaseModel):
     composer: Optional[str] = None
 
 class ScanRequest(BaseModel):
-    path: str = "/music"
+    path: Optional[str] = None
 
 @router.post("/scan")
 def scan_library(req: ScanRequest):
-    if not os.path.exists(req.path):
-        raise HTTPException(status_code=404, detail=f"Path not found: {req.path}")
+    scan_path = req.path or os.getenv("OPUSTAG_MUSIC_DIR", "/music")
     
-    albums = tagger_service.scan_library(req.path)
+    if not os.path.exists(scan_path):
+        raise HTTPException(status_code=404, detail=f"Path not found: {scan_path}")
+    
+    albums = tagger_service.scan_library(scan_path)
     return albums
 
 @router.get("/cover")
