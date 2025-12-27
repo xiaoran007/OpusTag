@@ -28,10 +28,10 @@ interface LocalAlbum {
 interface AlbumDetailProps {
   album: LocalAlbum;
   onClose: () => void;
-  onRefresh: () => void;
+  onUpdate: (oldId: string, updatedAlbums: LocalAlbum[]) => void;
 }
 
-export function AlbumDetail({ album, onClose, onRefresh }: AlbumDetailProps) {
+export function AlbumDetail({ album, onClose, onUpdate }: AlbumDetailProps) {
   const [showPicker, setShowPicker] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
 
@@ -43,12 +43,16 @@ export function AlbumDetail({ album, onClose, onRefresh }: AlbumDetailProps) {
   const handleEmbedCover = async (imageUrl: string) => {
     try {
       const filePaths = album.tracks.map(t => t.path);
-      await axios.post('/api/library/embed', {
+      const res = await axios.post('/api/library/embed', {
         file_paths: filePaths,
         image_url: imageUrl
       });
       setShowPicker(false);
-      onRefresh(); 
+      
+      // Notify parent to merge updates
+      if (res.data.updated_albums) {
+        onUpdate(album.id, res.data.updated_albums);
+      }
     } catch (err) {
       console.error(err);
       throw err;
@@ -58,7 +62,7 @@ export function AlbumDetail({ album, onClose, onRefresh }: AlbumDetailProps) {
   const handleSaveMetadata = async (data: any) => {
     try {
       const filePaths = album.tracks.map(t => t.path);
-      await axios.post('/api/library/update_meta', {
+      const res = await axios.post('/api/library/update_meta', {
         file_paths: filePaths,
         artist: data.artist,
         album: data.title,
@@ -67,7 +71,11 @@ export function AlbumDetail({ album, onClose, onRefresh }: AlbumDetailProps) {
         composer: data.composer
       });
       setShowEditor(false);
-      onRefresh();
+      
+      // Notify parent to merge updates
+      if (res.data.updated_albums) {
+        onUpdate(album.id, res.data.updated_albums);
+      }
     } catch (err) {
       console.error(err);
       throw err;

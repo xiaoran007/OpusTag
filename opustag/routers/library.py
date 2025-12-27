@@ -53,7 +53,9 @@ def embed_cover(req: EmbedRequest):
     """
     try:
         tagger_service.embed_cover_from_url(req.file_paths, req.image_url)
-        return {"status": "success", "processed": len(req.file_paths)}
+        # Return the updated album(s) data
+        updated_albums = tagger_service.get_albums_from_paths(req.file_paths)
+        return {"status": "success", "processed": len(req.file_paths), "updated_albums": updated_albums}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -74,6 +76,8 @@ def update_metadata(req: UpdateMetaRequest):
         
     try:
         tagger_service.update_album_metadata(req.file_paths, tags)
-        return {"status": "success", "processed": len(req.file_paths)}
+        # Return the updated album(s) data
+        updated_albums = tagger_service.get_albums_from_paths(req.file_paths)
+        return {"status": "success", "processed": len(req.file_paths), "updated_albums": updated_albums}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

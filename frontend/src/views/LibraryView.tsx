@@ -64,6 +64,29 @@ export function LibraryView() {
     setSelectedAlbum(null); // Close detail view after refresh to see changes on grid
   };
 
+  const handleAlbumUpdate = (oldId: string, updatedAlbums: LocalAlbum[]) => {
+    setAlbums(prev => {
+       const index = prev.findIndex(a => a.id === oldId);
+       if (index === -1) {
+           // Not found, append
+           return [...prev, ...updatedAlbums];
+       }
+       
+       const newAttributes = [...prev];
+       // Replace at index
+       newAttributes.splice(index, 1, ...updatedAlbums);
+       
+       return newAttributes;
+    });
+
+    if (updatedAlbums.length > 0) {
+        setSelectedAlbum(updatedAlbums[0]);
+    } else {
+        setSelectedAlbum(null);
+    }
+    setCoverVersion(Date.now());
+  };
+
   return (
     <div className="h-full w-full flex flex-col bg-[#1c1c1e] relative">
       
@@ -160,7 +183,7 @@ export function LibraryView() {
         <AlbumDetail 
             album={selectedAlbum} 
             onClose={() => setSelectedAlbum(null)} 
-            onRefresh={handleRefresh}
+            onUpdate={handleAlbumUpdate}
         />
       )}
     </div>
