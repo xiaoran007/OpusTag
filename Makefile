@@ -1,4 +1,4 @@
-.PHONY: clean frontend build publish install
+.PHONY: clean frontend build publish dev
 
 clean:
 	rm -rf dist/
@@ -17,3 +17,6 @@ build: clean frontend
 
 push:
 	twine upload dist/*
+
+dev:
+	docker compose -f docker-compose.dev.yml up --build --force-recreate

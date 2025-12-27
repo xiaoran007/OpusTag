@@ -1,8 +1,8 @@
 # OpusTag
 
-<!-- [![Downloads](https://static.pepy.tech/badge/opustag)](https://pepy.tech/project/opustag) -->
-![Docker Pulls](https://img.shields.io/docker/pulls/xiaoran007/opustag)
+[![Downloads](https://static.pepy.tech/badge/opustag)](https://pepy.tech/project/opustag)
 ![PyPI - Version](https://img.shields.io/pypi/v/opustag?label=version)
+<!-- ![Docker Pulls](https://img.shields.io/docker/pulls/xiaoran007/opustag) -->
 
 ![Static Badge](https://img.shields.io/badge/amd64-green)
 ![Static Badge](https://img.shields.io/badge/aarch64-blue)
@@ -26,7 +26,7 @@ OpusTag can be installed as a Python package or run via Docker.
 
 ### Prerequisites
 
-- A folder containing your music collection (FLAC format recommended).
+- A folder containing your music collection.
 
 ### Installation (Pip)
 
@@ -67,16 +67,12 @@ If you want to contribute or build from source:
     cd OpusTag
     ```
 
-2.  **Install dependencies:**
+2.  **Start Dev Container:**
     ```bash
-    pip install -e .
+    make dev
     ```
 
-3.  **Run Development Server:**
-    ```bash
-    uvicorn opustag.main:app --reload
-    ```
-    *Note: For frontend development, you will also need to run the Vite dev server inside the `frontend/` directory.*
+The dev application will be available at **[http://localhost:8001](http://localhost:8001)**.
 
 ## 📖 Usage Guide
 
