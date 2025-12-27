@@ -92,12 +92,38 @@ class TaggerService:
         except:
             return 999
 
+    def _find_local_cover(self, directory: str) -> Optional[str]:
+        """Scans directory for cover art files (Navidrome compatible)."""
+        base_names = ["cover", "folder", "front", "artwork"]
+        extensions = ["jpg", "jpeg", "png", "gif", "bmp"]
+        
+        try:
+            if not os.path.exists(directory):
+                return None
+                
+            files = os.listdir(directory)
+            # Create a map for case-insensitive lookup
+            files_map = {f.lower(): f for f in files}
+            
+            for base in base_names:
+                for ext in extensions:
+                    candidate = f"{base}.{ext}"
+                    if candidate in files_map:
+                        return os.path.join(directory, files_map[candidate])
+        except Exception:
+            pass
+        return None
+
     def get_metadata(self, file_path: str) -> Optional[Dict[str, Any]]:
         try:
             audio = FLAC(file_path)
             
             def get(key, default=""):
                 return audio.get(key, [default])[0]
+
+            directory = os.path.dirname(file_path)
+            has_local_cover = self._find_local_cover(directory) is not None
+            has_embedded_cover = len(audio.pictures) > 0
 
             return {
                 "path": file_path,
@@ -109,14 +135,22 @@ class TaggerService:
                 "genre": get("genre"),
                 "composer": get("composer"),
                 "track_number": get("tracknumber", "0"),
-                "has_cover": len(audio.pictures) > 0
+                "has_cover": has_embedded_cover or has_local_cover
             }
         except Exception:
             return None
 
     def get_cover_data(self, file_path: str) -> Optional[bytes]:
-        """Extracts the raw bytes of the cover art from a FLAC file."""
+        """Extracts cover art: checks local file first, then embedded tags."""
         try:
+            # 1. Check local file
+            directory = os.path.dirname(file_path)
+            local_cover_path = self._find_local_cover(directory)
+            if local_cover_path:
+                with open(local_cover_path, "rb") as f:
+                    return f.read()
+
+            # 2. Check embedded tags
             audio = FLAC(file_path)
             if audio.pictures:
                 return audio.pictures[0].data
@@ -125,7 +159,7 @@ class TaggerService:
             return None
 
     def embed_cover_from_url(self, file_paths: List[str], image_url: str):
-        """Downloads image and embeds it into multiple FLAC files."""
+        """Downloads image, saves as local file, and embeds into FLAC files."""
         # Download image
         try:
             response = requests.get(image_url)
@@ -134,6 +168,32 @@ class TaggerService:
             mime_type = response.headers.get('Content-Type', 'image/jpeg')
         except Exception as e:
             raise Exception(f"Failed to download image: {e}")
+
+        # Save to local file (overwrite existing or create new)
+        if file_paths:
+            try:
+                # Use the directory of the first file
+                first_file_dir = os.path.dirname(file_paths[0])
+                
+                # Determine extension based on mime type for new files
+                ext = "jpg"
+                if mime_type == "image/png": ext = "png"
+                elif mime_type == "image/gif": ext = "gif"
+
+                # Check for existing cover to overwrite
+                existing_cover = self._find_local_cover(first_file_dir)
+                
+                if existing_cover:
+                    cover_path = existing_cover
+                    print(f"Overwriting existing cover: {cover_path}")
+                else:
+                    cover_path = os.path.join(first_file_dir, f"cover.{ext}")
+                    print(f"Creating new cover: {cover_path}")
+
+                with open(cover_path, "wb") as f:
+                    f.write(image_data)
+            except Exception as e:
+                print(f"Failed to save local cover file: {e}")
 
         # Create Picture object
         pic = Picture()
